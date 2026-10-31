@@ -21,10 +21,12 @@ $result = $conn->query($sql);
         - Status: <?php echo $row['status']; ?>
     </p>
 
-    <form method="POST" action="update_request.php">
-        <input type="hidden" name="requestId" value="<?php echo $row['requestId']; ?>">
-        <button type="submit" name="action" value="accept">Accept</button>
-        <button type="submit" name="action" value="reject">Reject</button>
-    </form>
+    <?php if ($row['status'] == 'Pending') { ?>
+        <form method="POST" action="update_request.php">
+            <input type="hidden" name="requestId" value="<?php echo $row['requestId']; ?>">
+            <button type="submit" name="action" value="accept">Accept</button>
+            <button type="submit" name="action" value="reject">Reject</button>
+        </form>
+    <?php } ?>
     <hr>
 <?php } ?>
