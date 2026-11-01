@@ -1,42 +1,18 @@
-<?php
-require __DIR__ . '/../includes/db.php';
+<?php if (can_delete_book($b['ownerId'])): ?>
 
-// Deleting is allowed only from the form button (POST), not by typing the address
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: list_books.php');
-    exit;
-}
+    <form method="POST"
+          action="delete_book.php"
+          onsubmit="return confirm('Are you sure you want to delete this book?');"
+          style="margin-top:10px;">
 
-$bookId = (int) ($_POST['book_id'] ?? 0);
+        <input type="hidden"
+               name="book_id"
+               value="<?= (int)$b['bookId'] ?>">
 
-// Find the book first
-$stmt = $pdo->prepare('SELECT ownerId, cover_image FROM books WHERE bookId = ?');
-$stmt->execute([$bookId]);
-$book = $stmt->fetch();
+        <button class="btn danger" type="submit">
+            Delete
+        </button>
 
-if (!$book) {
-    header('Location: list_books.php?msg=notfound');
-    exit;
-}
+    </form>
 
-// Security check: only the owner or an admin may delete.
-// The button is hidden for others, but we check again here
-// because someone could try to send the request manually.
-if (!can_delete_book($book['ownerId'])) {
-    header('Location: list_books.php?msg=notallowed');
-    exit;
-}
-
-// Delete the book from the database
-$pdo->prepare('DELETE FROM books WHERE bookId = ?')->execute([$bookId]);
-
-// Also remove its cover image file, if it has one
-if ($book['cover_image']) {
-    $path = __DIR__ . '/../assets/uploads/books/' . basename($book['cover_image']);
-    if (is_file($path)) {
-        unlink($path);
-    }
-}
-
-header('Location: list_books.php?msg=deleted');
-exit;
+<?php endif; ?>
