@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $bookId = (int) ($_POST['book_id'] ?? 0);
 
 // Find the book first
-$stmt = $pdo->prepare('SELECT user_id, cover_image FROM books WHERE id = ?');
+$stmt = $pdo->prepare('SELECT ownerId, cover_image FROM books WHERE bookId = ?');
 $stmt->execute([$bookId]);
 $book = $stmt->fetch();
 
@@ -22,13 +22,13 @@ if (!$book) {
 // Security check: only the owner or an admin may delete.
 // The button is hidden for others, but we check again here
 // because someone could try to send the request manually.
-if (!can_delete_book($book['user_id'])) {
+if (!can_delete_book($book['ownerId'])) {
     header('Location: list_books.php?msg=notallowed');
     exit;
 }
 
 // Delete the book from the database
-$pdo->prepare('DELETE FROM books WHERE id = ?')->execute([$bookId]);
+$pdo->prepare('DELETE FROM books WHERE bookId = ?')->execute([$bookId]);
 
 // Also remove its cover image file, if it has one
 if ($book['cover_image']) {

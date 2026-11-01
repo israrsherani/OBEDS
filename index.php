@@ -7,13 +7,12 @@ $active    = 'home';
 
 // Count how many available books there are of each type
 $counts = ['exchange' => 0, 'donate' => 0];
-$rows = $pdo->query("SELECT listing_type, COUNT(*) AS n FROM books WHERE status = 'available' GROUP BY listing_type")->fetchAll();
+$rows = $pdo->query("SELECT listing_type, COUNT(*) AS n FROM books WHERE status = 'Available' GROUP BY listing_type")->fetchAll();
 foreach ($rows as $r) {
     if (isset($counts[$r['listing_type']])) {
         $counts[$r['listing_type']] = (int) $r['n'];
     }
 }
-
 require __DIR__ . '/includes/header.php';
 ?>
 <section class="hero">

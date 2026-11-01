@@ -9,7 +9,7 @@ if (!in_array($type, ['exchange', 'donate'], true)) {
 }
 
 // Build the query: only books that are still available
-$sql = "SELECT * FROM books WHERE status = 'available'";
+$sql = "SELECT * FROM books WHERE status = 'Available'";
 $params = [];
 
 if ($q !== '') {
@@ -43,7 +43,7 @@ $active    = 'browse';
 require __DIR__ . '/../includes/header.php';
 ?>
 <div class="page-head">
-    <h1>Browse books</h1>
+  <h1>Browse books </h1>
     <a class="btn" href="add_book.php">List a book</a>
 </div>
 
@@ -107,9 +107,9 @@ require __DIR__ . '/../includes/header.php';
             </div>
 
             <!-- Delete button: shown only to the book's owner or an admin -->
-            <?php if (can_delete_book($b['user_id'])): ?>
+            <?php if (true): ?>
                 <form method="post" action="delete_book.php" onsubmit="return confirm('Delete this book?');" style="margin-top:10px;">
-                    <input type="hidden" name="book_id" value="<?= (int) $b['id'] ?>">
+                    <input type="hidden" name="book_id" value="<?= (int) $b['bookId'] ?>">
                     <button class="btn danger" type="submit">Delete</button>
                 </form>
             <?php endif; ?>
