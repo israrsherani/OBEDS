@@ -5,7 +5,7 @@
 | Login | In progress | Asma |
 | List a book | In progress | Sumaiya |
 | Search books | Not started | Ismaeel |
-| Request a book | Done (PR open) | Israr |
+| Request a book | Done | Israr |
 | Accept / Reject request | Done | Israr |
 | Track request status | Not started | Unassigned |
 | Test cases | Not started | Shireen |
