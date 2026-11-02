@@ -1,10 +1,16 @@
 <?php
 require __DIR__ . '/../includes/db.php';
 
+// Read search text and type filter
 $q    = trim($_GET['q'] ?? '');
 $type = $_GET['type'] ?? '';
 
-$sql = "SELECT * FROM books WHERE status = 'available'";
+if (!in_array($type, ['exchange', 'donate'], true)) {
+    $type = '';
+}
+
+// Get available books
+$sql = "SELECT * FROM books WHERE status = 'Available'";
 $params = [];
 
 if ($q !== '') {
@@ -12,61 +18,224 @@ if ($q !== '') {
     $params[] = "%$q%";
     $params[] = "%$q%";
 }
-if (in_array($type, ['exchange', 'donate'], true)) {
+
+if ($type !== '') {
     $sql .= ' AND listing_type = ?';
     $params[] = $type;
 }
+
 $sql .= ' ORDER BY created_at DESC';
 
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $books = $stmt->fetchAll();
+
+// Messages after adding or deleting a book
+$msg = $_GET['msg'] ?? '';
+
+// Build filter links
+function chip_link($type, $q) {
+    $args = [];
+
+    if ($q !== '') {
+        $args['q'] = $q;
+    }
+
+    if ($type !== '') {
+        $args['type'] = $type;
+    }
+
+    return 'list_books.php' . ($args ? '?' . http_build_query($args) : '');
+}
+
+$pageTitle = 'Browse books';
+$active = 'browse';
+
+require __DIR__ . '/../includes/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Available Books - OBEDS</title>
-</head>
-<body>
-    <h1>Available Books</h1>
-    <p><a href="add_book.php">+ List a Book</a></p>
 
-    <?php if (($_GET['msg'] ?? '') === 'added'): ?>
-        <p style="color:green;">Book listed successfully!</p>
+<div class="page-head">
+    <h1>Browse books</h1>
+    <a class="btn" href="add_book.php">List a book</a>
+</div>
+
+<?php if ($msg === 'added'): ?>
+
+    <p class="notice ok">Your book is listed.</p>
+
+<?php elseif ($msg === 'deleted'): ?>
+
+    <p class="notice ok">Book deleted.</p>
+
+<?php elseif ($msg === 'notallowed'): ?>
+
+    <p class="notice err">You can only delete your own books.</p>
+
+<?php elseif ($msg === 'notfound'): ?>
+
+    <p class="notice err">That book no longer exists.</p>
+
+<?php endif;?>
+<!-- Search form -->
+
+<form class="search" method="get">
+
+    <input
+        type="text"
+        name="q"
+        placeholder="Search by title or author"
+        value="<?= e($q) ?>"
+        aria-label="Search books"
+    >
+
+    <?php if ($type !== ''): ?>
+        <input type="hidden" name="type" value="<?= e($type) ?>">
     <?php endif; ?>
 
-    <form method="get">
-        <input type="text" name="q" placeholder="Search by title or author" value="<?= e($q) ?>">
-        <select name="type">
-            <option value="">All</option>
-            <option value="exchange" <?= $type === 'exchange' ? 'selected' : '' ?>>Exchange</option>
-            <option value="donate" <?= $type === 'donate' ? 'selected' : '' ?>>Donate</option>
-        </select>
-        <button type="submit">Search</button>
-    </form>
-    <hr>
+    <button class="btn" type="submit">Search</button>
 
-    <?php if (!$books): ?>
-        <p>No books found.</p>
-    <?php endif; ?>
+</form>
 
-    <?php foreach ($books as $b): ?>
-        <div class="book-card">
-            <?php if ($b['cover_image']): ?>
-                <img src="../assets/uploads/books/<?= e($b['cover_image']) ?>" alt="<?= e($b['title']) ?>" width="120">
-            <?php endif; ?>
-            <h3><?= e($b['title']) ?></h3>
-            <p>by <?= e($b['author']) ?></p>
-            <p>Category: <?= e($b['category']) ?> | Condition: <?= e(ucfirst($b['book_condition'])) ?></p>
-            <p>Type: <?= $b['listing_type'] === 'donate' ? 'Free (Donate)' : 'Exchange' ?></p>
-            <?php if ($b['description']): ?>
-                <p><?= nl2br(e($b['description'])) ?></p>
-            <?php endif; ?>
-            <small>Listed on <?= e(date('d M Y', strtotime($b['created_at']))) ?></small>
-        </div>
-        <hr>
+
+<!-- Exchange and Donate filters -->
+
+<div class="chips" aria-label="Filter by type">
+
+    <?php foreach (['' => 'All', 'exchange' => 'Exchange', 'donate' => 'Donate'] as $v => $label): ?>
+
+        <a
+            class="chip"
+            href="<?= e(chip_link($v, $q)) ?>"
+            <?= $type === $v ? 'aria-current="true"' : '' ?>
+        >
+            <?= $label ?>
+        </a>
+
     <?php endforeach; ?>
-</body>
-</html>
+
+</div>
+
+
+<!-- Show message if no books are available -->
+
+<?php if (!$books): ?>
+
+    <p class="empty">
+        No books found. Try another search, or
+        <a href="add_book.php">list the first one</a>.
+    </p>
+
+<?php endif; ?>
+
+
+<!-- Display books -->
+
+<div class="shelf">
+
+<?php foreach ($books as $b): ?>
+
+    <article class="book t-<?= e($b['listing_type']) ?>">
+
+        <div class="cover">
+
+            <?php if (!empty($b['cover_image'])): ?>
+
+                <img
+                    src="../assets/uploads/books/<?= e($b['cover_image']) ?>"
+                    alt="Cover of <?= e($b['title']) ?>"
+                >
+
+            <?php else: ?>
+
+                <span class="no-cover" aria-hidden="true">
+                    <?= e(mb_strtoupper(mb_substr($b['title'], 0, 1))) ?>
+                </span>
+
+            <?php endif; ?>
+
+        </div>
+
+        <div class="info">
+
+            <h3><?= e($b['title']) ?></h3>
+
+            <p class="by">
+                by <?= e($b['author']) ?>
+            </p>
+
+            <p class="meta">
+                <?= e($b['category']) ?>
+                &bull;
+                <?= e(ucfirst($b['book_condition'])) ?> condition
+            </p>
+
+            <?php if (!empty($b['isbn'])): ?>
+
+                <p class="meta">
+                    ISBN <?= e($b['isbn']) ?>
+                </p>
+
+            <?php endif; ?>
+
+            <?php if (!empty($b['description'])): ?>
+
+                <p class="desc">
+                    <?= nl2br(e($b['description'])) ?>
+                </p>
+
+            <?php endif; ?>
+
+            <div class="foot">
+
+                <span class="badge">
+
+                    <?php if ($b['listing_type'] === 'donate'): ?>
+                        Free
+                    <?php else: ?>
+                        For exchange
+                    <?php endif; ?>
+
+                </span>
+
+                <small>
+                    Listed <?= e(date('d M Y', strtotime($b['created_at']))) ?>
+                </small>
+
+            </div>
+
+
+            <!-- Admin can delete all books -->
+            <!-- Normal user can delete only their own books -->
+
+            <?php if (can_delete_book($b['ownerId'])): ?>
+
+                <form
+                    method="post"
+                    action="delete_book.php"
+                    onsubmit="return confirm('Are you sure you want to delete this book?');"
+                    style="margin-top:10px;"
+                >
+
+                    <input
+                        type="hidden"
+                        name="book_id"
+                        value="<?= (int)$b['bookId'] ?>"
+                    >
+
+                    <button class="btn danger" type="submit">
+                        Delete
+                    </button>
+
+                </form>
+
+            <?php endif; ?>
+
+        </div>
+
+    </article>
+
+<?php endforeach; ?>
+
+</div>
+
+<?php require __DIR__ . '/../includes/footer.php'; ?>

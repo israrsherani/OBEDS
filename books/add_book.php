@@ -1,58 +1,81 @@
 <?php
-session_start();
 require __DIR__ . '/../includes/db.php';
 
-// TODO: once login is built, keep only $_SESSION['user_id']
-$userId = $_SESSION['user_id'] ?? 1;
+$userId = current_user_id();
+
+// Categories where the ISBN number is compulsory.
+$isbnRequired = ['Textbook'];
+
+$categories = ['Fiction', 'Non-Fiction', 'Textbook', 'Competitive Exams', 'Comics', 'Self-Help', 'Science', 'Other'];
 
 $errors = [];
 $old = [
     'title' => '', 'author' => '', 'isbn' => '', 'category' => '',
-    'book_condition' => 'good', 'listing_type' => 'exchange', 'description' => '',
+    'book_condition' => 'good', 'listing_type' => 'exchange',
+    'description' => '',
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Read every field from the form
     foreach ($old as $key => $_) {
         $old[$key] = trim($_POST[$key] ?? '');
     }
 
-    // ---------- Validation ----------
-    if ($old['title'] === '' || strlen($old['title']) > 200) {
-        $errors[] = 'Title is required (max 200 characters).';
+    // Validation
+    if ($old['title'] === '' || strlen($old['title']) > 150) {
+        $errors[] = 'Enter a title (up to 150 characters).';
     }
     if ($old['author'] === '') {
-        $errors[] = 'Author name is required.';
+        $errors[] = 'Enter the author name.';
     }
-    if ($old['category'] === '') {
-        $errors[] = 'Please select a category.';
+    if (!in_array($old['category'], $categories, true)) {
+        $errors[] = 'Choose a category.';
     }
     if (!in_array($old['book_condition'], ['new', 'good', 'fair', 'poor'], true)) {
-        $errors[] = 'Invalid condition.';
+        $errors[] = 'Choose a valid condition.';
     }
     if (!in_array($old['listing_type'], ['exchange', 'donate'], true)) {
-        $errors[] = 'Invalid listing type.';
+        $errors[] = 'Choose exchange or donate.';
     }
 
-    // ---------- Image (optional) ----------
+    // ISBN is compulsory for selected categories
+    if (in_array($old['category'], $isbnRequired, true) && $old['isbn'] === '') {
+        $errors[] = 'Enter the ISBN. It is required for ' . $old['category'] . ' books.';
+    }
+
+    // Validate ISBN format
+    if ($old['isbn'] !== '' && !preg_match('/^[0-9Xx-]{10,17}$/', $old['isbn'])) {
+        $errors[] = 'The ISBN should be 10 to 13 digits. Dashes are allowed.';
+    }
+
+    // Cover image upload
     $coverName = null;
     if (!empty($_FILES['cover_image']['name'])) {
         $file = $_FILES['cover_image'];
+
         if ($file['error'] !== UPLOAD_ERR_OK) {
-            $errors[] = 'There was a problem uploading the image.';
+            $errors[] = 'The image could not be uploaded. Try again.';
         } elseif ($file['size'] > 2 * 1024 * 1024) {
-            $errors[] = 'Image must be smaller than 2MB.';
+            $errors[] = 'The image is larger than 2 MB. Choose a smaller one.';
         } else {
+            // Check the actual file type
             $mime = (new finfo(FILEINFO_MIME_TYPE))->file($file['tmp_name']);
-            $allowed = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
+            $allowed = [
+                'image/jpeg' => 'jpg',
+                'image/png' => 'png',
+                'image/webp' => 'webp'
+            ];
+
             if (!isset($allowed[$mime])) {
-                $errors[] = 'Only JPG, PNG or WEBP images are allowed.';
+                $errors[] = 'Use a JPG, PNG or WEBP image.';
             } else {
+                // Generate a unique file name
                 $coverName = bin2hex(random_bytes(12)) . '.' . $allowed[$mime];
             }
         }
     }
 
-    // ---------- Save ----------
+    // Save the book to the database
     if (!$errors) {
         if ($coverName !== null) {
             move_uploaded_file(
@@ -63,9 +86,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $stmt = $pdo->prepare(
             'INSERT INTO books
-             (user_id, title, author, isbn, category, book_condition, listing_type, description, cover_image)
+             (ownerId, title, author, isbn, category, book_condition, listing_type, description, cover_image)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
         );
+
         $stmt->execute([
             $userId,
             $old['title'],
@@ -82,64 +106,92 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 }
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>List a Book - OBEDS</title>
-</head>
-<body>
-    <h1>List a Book</h1>
-    <p><a href="list_books.php">&larr; Browse Books</a></p>
 
-    <?php if ($errors): ?>
-        <ul style="color:red;">
+$pageTitle = 'List a book';
+$active = 'add';
+
+require __DIR__ . '/../includes/header.php';
+?>
+
+<h1>List a book</h1>
+
+<?php if ($errors): ?>
+    <div class="notice err" role="alert">
+        <ul>
             <?php foreach ($errors as $err): ?>
                 <li><?= e($err) ?></li>
             <?php endforeach; ?>
         </ul>
-    <?php endif; ?>
+    </div>
+<?php endif; ?>
 
-    <form method="post" enctype="multipart/form-data">
-        <p><label>Title *<br>
-            <input type="text" name="title" value="<?= e($old['title']) ?>" required></label></p>
+<form class="form-card" method="post" enctype="multipart/form-data">
 
-        <p><label>Author *<br>
-            <input type="text" name="author" value="<?= e($old['author']) ?>" required></label></p>
+    <div class="field">
+        <label for="title">Title</label>
+        <input type="text" id="title" name="title" value="<?= e($old['title']) ?>" required>
+    </div>
 
-        <p><label>ISBN (optional)<br>
-            <input type="text" name="isbn" value="<?= e($old['isbn']) ?>"></label></p>
+    <div class="field">
+        <label for="author">Author</label>
+        <input type="text" id="author" name="author" value="<?= e($old['author']) ?>" required>
+    </div>
 
-        <p><label>Category *<br>
-            <select name="category" required>
-                <option value="">-- Select --</option>
-                <?php foreach (['Fiction','Non-Fiction','Textbook','Competitive Exams','Comics','Self-Help','Science','Other'] as $c): ?>
-                    <option value="<?= e($c) ?>" <?= $old['category'] === $c ? 'selected' : '' ?>><?= e($c) ?></option>
+    <div class="row">
+        <div class="field">
+            <label for="category">Category</label>
+            <select id="category" name="category" required>
+                <option value="">Choose a category</option>
+                <?php foreach ($categories as $c): ?>
+                    <option value="<?= e($c) ?>" <?= $old['category'] === $c ? 'selected' : '' ?>>
+                        <?= e($c) ?>
+                    </option>
                 <?php endforeach; ?>
-            </select></label></p>
+            </select>
+        </div>
 
-        <p><label>Condition *<br>
-            <select name="book_condition">
+        <div class="field">
+            <label for="isbn">ISBN <span class="hint" id="isbn-hint">(optional)</span></label>
+            <input type="text" id="isbn" name="isbn" value="<?= e($old['isbn']) ?>" placeholder="978-3-16-148410-0">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="field">
+            <label for="book_condition">Condition</label>
+            <select id="book_condition" name="book_condition">
                 <?php foreach (['new' => 'New', 'good' => 'Good', 'fair' => 'Fair', 'poor' => 'Poor'] as $v => $label): ?>
-                    <option value="<?= $v ?>" <?= $old['book_condition'] === $v ? 'selected' : '' ?>><?= $label ?></option>
+                    <option value="<?= $v ?>" <?= $old['book_condition'] === $v ? 'selected' : '' ?>>
+                        <?= $label ?>
+                    </option>
                 <?php endforeach; ?>
-            </select></label></p>
+            </select>
+        </div>
 
-        <p><label>Listing Type *<br>
-            <select name="listing_type">
-                <option value="exchange" <?= $old['listing_type'] === 'exchange' ? 'selected' : '' ?>>Exchange</option>
-                <option value="donate" <?= $old['listing_type'] === 'donate' ? 'selected' : '' ?>>Donate</option>
-            </select></label></p>
+        <div class="field">
+            <label for="listing_type">What do you want to do with it?</label>
+            <select id="listing_type" name="listing_type">
+                <option value="exchange" <?= $old['listing_type'] === 'exchange' ? 'selected' : '' ?>>
+                    Exchange it for another book
+                </option>
+                <option value="donate" <?= $old['listing_type'] === 'donate' ? 'selected' : '' ?>>
+                    Donate it
+                </option>
+            </select>
+        </div>
+    </div>
 
-        <p><label>Description<br>
-            <textarea name="description" rows="4" cols="40"><?= e($old['description']) ?></textarea></label></p>
+    <div class="field">
+        <label for="description">Description</label>
+        <textarea id="description" name="description" rows="4" placeholder="Tell us more about the book..."><?= e($old['description']) ?></textarea>
+    </div>
 
-        <p><label>Cover Image (JPG/PNG/WEBP, max 2MB)<br>
-            <input type="file" name="cover_image" accept="image/jpeg,image/png,image/webp"></label></p>
+    <div class="field">
+        <label for="cover_image">Cover Image</label>
+        <input type="file" id="cover_image" name="cover_image" accept="image/*">
+    </div>
 
-        <button type="submit">List Book</button>
-    </form>
-</body>
-</html>
+    <button type="submit">List Book</button>
+</form>
+
+<?php require __DIR__ . '/../includes/footer.php'; ?>
