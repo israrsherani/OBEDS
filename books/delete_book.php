@@ -1,18 +1,28 @@
-<?php if (can_delete_book($b['ownerId'])): ?>
+<?php
+require __DIR__ . '/../includes/db.php';
 
-    <form method="POST"
-          action="delete_book.php"
-          onsubmit="return confirm('Are you sure you want to delete this book?');"
-          style="margin-top:10px;">
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Location: list_books.php');
+    exit;
+}
 
-        <input type="hidden"
-               name="book_id"
-               value="<?= (int)$b['bookId'] ?>">
+$bookId = (int)($_POST['book_id'] ?? 0);
 
-        <button class="btn danger" type="submit">
-            Delete
-        </button>
+$stmt = $pdo->prepare('SELECT ownerId, cover_image FROM books WHERE bookId = ?');
+$stmt->execute([$bookId]);
+$book = $stmt->fetch();
 
-    </form>
+if (!$book) {
+    header('Location: list_books.php?msg=notfound');
+    exit;
+}
 
-<?php endif; ?>
+if (!can_delete_book($book['ownerId'])) {
+    header('Location: list_books.php?msg=notallowed');
+    exit;
+}
+
+$pdo->prepare('DELETE FROM books WHERE bookId = ?')->execute([$bookId]);
+
+header('Location: list_books.php?msg=deleted');
+exit;
