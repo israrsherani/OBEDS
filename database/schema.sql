@@ -31,7 +31,15 @@ CREATE TABLE `books` (
   `bookId` int(11) NOT NULL,
   `title` varchar(150) DEFAULT NULL,
   `ownerId` int(11) DEFAULT NULL,
-  `status` varchar(20) DEFAULT 'Available'
+  `status` varchar(20) DEFAULT 'Available',
+  `author` varchar(150) DEFAULT NULL,
+  `isbn` varchar(20) DEFAULT NULL,
+  `category` varchar(100) DEFAULT NULL,
+  `book_condition` varchar(50) DEFAULT NULL,
+  `listing_type` varchar(20) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `cover_image` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
