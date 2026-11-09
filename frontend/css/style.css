@@ -1,0 +1,20 @@
+/* OBEDS Login Page */
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.login-card {
+    background-color: white;
+    border: 1px solid #dbeafe;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Input par click karne par neeli outline */
+.login-card input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
