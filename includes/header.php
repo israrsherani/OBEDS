@@ -20,11 +20,34 @@ $active    = $active ?? '';
 <header class="site-header">
     <div class="wrap bar">
         <a class="brand" href="<?= $base ?>index.php">OBEDS<small>Online Book Exchange &amp; Donation</small></a>
-        <nav aria-label="Main">
-            <a href="<?= $base ?>index.php" <?= $active === 'home' ? 'aria-current="page"' : '' ?>>Home</a>
-            <a href="<?= $base ?>books/list_books.php" <?= $active === 'browse' ? 'aria-current="page"' : '' ?>>Browse books</a>
-            <a class="nav-cta" href="<?= $base ?>books/add_book.php" <?= $active === 'add' ? 'aria-current="page"' : '' ?>>List a book</a>
-        </nav>
+<nav aria-label="Main">
+    <a href="<?= $base ?>index.php"
+       <?= $active === 'home' ? 'aria-current="page"' : '' ?>>Home</a>
+
+    <a href="<?= $base ?>books/list_books.php"
+       <?= $active === 'browse' ? 'aria-current="page"' : '' ?>>Browse books</a>
+
+    <a class="nav-cta" href="<?= $base ?>books/add_book.php"
+       <?= $active === 'add' ? 'aria-current="page"' : '' ?>>List a book</a>
+
+    <?php if (current_user_id() !== null): ?>
+
+    <?php if (is_admin()): ?>
+        <a href="<?= $base ?>backend/admin/dashboard.php">
+            Admin Dashboard
+        </a>
+    <?php endif; ?>
+
+    <a href="<?= $base ?>backend/logout.php">Logout</a>
+
+<?php else: ?>
+
+    <a href="<?= $base ?>frontend/login.html">Login</a>
+    <a href="<?= $base ?>frontend/register.html">Register</a>
+
+<?php endif; ?>
+</nav>
+
     </div>
 </header>
 <main class="wrap">

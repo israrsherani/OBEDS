@@ -37,7 +37,7 @@ function e($v) {
 
 // Get the logged-in user's ID
 function current_user_id() {
-    return $_SESSION['user_id'] ?? null;
+    return $_SESSION['userId'] ?? null;
 }
 
 // Check whether the logged-in user is an admin
