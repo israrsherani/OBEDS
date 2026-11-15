@@ -5,7 +5,7 @@ $q = trim($_GET['q'] ?? '');
 $category = trim($_GET['category'] ?? '');
 $type = trim($_GET['type'] ?? '');
 
-$sql = "SELECT bookId, title, author, category, book_condition, listing_type FROM books WHERE status = 'Available'";
+$sql = "SELECT bookId, title, author, category, book_condition, listing_type, description FROM books WHERE status = 'Available'";
 $params = [];
 
 if ($q !== '') {
@@ -71,14 +71,20 @@ $categories = $pdo->query("SELECT DISTINCT category FROM books WHERE category IS
                 <th>Category</th>
                 <th>Condition</th>
                 <th>Type</th>
+                <th>Description</th>
             </tr>
             <?php foreach ($books as $b): ?>
                 <tr>
-                    <td><?= e($b['title']) ?></td>
+                    <td>
+    <a href="book_details.php?id=<?= urlencode($b['bookId']) ?>">
+        <?= e($b['title']) ?>
+    </a>
+</td>
                     <td><?= e($b['author']) ?></td>
                     <td><?= e($b['category']) ?></td>
                     <td><?= e($b['book_condition']) ?></td>
                     <td><?= e($b['listing_type']) ?></td>
+                    <td><?= e($b['description']) ?></td>
                 </tr>
             <?php endforeach; ?>
         </table>

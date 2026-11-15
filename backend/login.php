@@ -9,7 +9,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST["password"];
 
     $stmt = $conn->prepare(
-        "SELECT userId, name, password FROM users WHERE email = ?"
+        "SELECT userId, name, passwordHash, role, isSuspended
+         FROM users WHERE email = ?"
     );
 
     $stmt->bind_param("s", $email);
@@ -21,13 +22,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $user = $result->fetch_assoc();
 
-        if (password_verify($password, $user["password"])) {
+        if (password_verify($password, $user["passwordHash"])) {
+
+            // Block suspended accounts
+            if ((int)$user["isSuspended"] === 1) {
+                echo "Your account has been suspended.";
+                $stmt->close();
+                $conn->close();
+                exit;
+            }
+
+            // Start a fresh session after login
+            session_regenerate_id(true);
 
             $_SESSION["userId"] = $user["userId"];
             $_SESSION["name"] = $user["name"];
+            $_SESSION["role"] = $user["role"];
 
-            echo "Login successful! Welcome " .
-                 htmlspecialchars($user["name"]);
+            $stmt->close();
+            $conn->close();
+
+            header("Location: ../index.php");
+            exit;
 
         } else {
             echo "Invalid email or password.";
