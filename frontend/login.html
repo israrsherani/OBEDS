@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,54 +9,101 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
-<section class="bg-blue-50 min-h-screen">
+<section class="bg-[#F8FAFC] min-h-screen">
   <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
 
-    <!-- OBEDS ka title -->
     <div class="flex flex-col items-center mb-6">
-      <h1 class="text-4xl font-bold text-blue-700">OBEDS</h1>
-      <p class="text-sm text-blue-600 mt-2">Online Book Exchange &amp; Donation System</p>
+      <h1 class="text-4xl font-bold text-[#1D3557]">OBEDS</h1>
+      <p class="text-sm text-[#1D3557] mt-2">
+        Online Book Exchange &amp; Donation System
+      </p>
     </div>
 
-    <!-- Login card -->
     <div class="login-card w-full sm:max-w-md">
       <div class="p-6 space-y-4 sm:p-8">
-        <h2 class="text-xl font-bold text-gray-900 md:text-2xl">Sign in to your account</h2>
 
-        <!-- Error message: abhi chhupa hua hai, backend judne par dikhega -->
-        <div id="error-message" class="hidden p-3 text-sm text-red-700 bg-red-100 rounded-lg" role="alert"></div>
+        <h2 class="text-xl font-bold text-[#1D3557] md:text-2xl">
+          Sign in to your account
+        </h2>
 
-        <form id="login-form" class="space-y-4"
-      action="../backend/login.php" method="POST">
+        <div id="error-message"
+             class="hidden p-3 text-sm text-red-700 bg-red-100 rounded-lg"
+             role="alert"
+             aria-live="polite">
+        </div>
+
+        <form id="login-form"
+              class="space-y-4"
+              action="../backend/login.php"
+              method="POST">
+
           <div>
-            <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Your email</label>
-            <input type="email" name="email" id="email"
-                   class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg block w-full p-2.5"
-                   placeholder="name@example.com" required>
+            <label for="email"
+                   class="block mb-2 text-sm font-medium text-[#1D3557]">
+              Your email
+            </label>
+
+            <input type="email"
+                   name="email"
+                   id="email"
+                   class="bg-white border border-gray-300 text-gray-900 rounded-lg block w-full p-2.5"
+                   placeholder="name@example.com"
+                   required>
           </div>
 
           <div>
-            <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Password</label>
-            <input type="password" name="password" id="password"
-                   class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg block w-full p-2.5"
-                   placeholder="••••••••" required>
+            <label for="password"
+                   class="block mb-2 text-sm font-medium text-[#1D3557]">
+              Password
+            </label>
+
+            <input type="password"
+                   name="password"
+                   id="password"
+                   class="bg-white border border-gray-300 text-gray-900 rounded-lg block w-full p-2.5"
+                   placeholder="Enter your password"
+                   required>
           </div>
 
           <button type="submit"
-                  class="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                  class="w-full text-white bg-[#1D3557] hover:bg-[#38BDF8] focus:ring-4 focus:outline-none focus:ring-sky-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center transition duration-200">
             Sign in
           </button>
 
-          <p class="text-sm font-light text-gray-500">
+          <p class="text-sm font-light text-gray-600">
             Don’t have an account yet?
-            <a href="register.html" class="font-medium text-blue-600 hover:underline">Sign up</a>
+            <a href="register.html"
+               class="font-medium text-[#1D3557] hover:text-[#38BDF8] hover:underline">
+              Sign up
+            </a>
           </p>
+
         </form>
       </div>
     </div>
 
   </div>
 </section>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const error = params.get('error');
+
+const errorMessages = {
+    invalid_credentials: 'Invalid email or password.',
+    suspended: 'Your account has been suspended.',
+    invalid_request: 'Invalid login request. Please try again.',
+    login_failed: 'Login could not be completed. Please try again.'
+};
+
+if (error && errorMessages[error]) {
+    const errorBox = document.getElementById('error-message');
+    errorBox.textContent = errorMessages[error];
+    errorBox.classList.remove('hidden');
+}
+</script>
+
 </body>
 </html>

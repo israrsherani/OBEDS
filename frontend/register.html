@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,68 +9,149 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
-<section class="bg-blue-50 min-h-screen">
+<section class="bg-[#F8FAFC] min-h-screen">
   <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
 
-    <!-- OBEDS ka title -->
     <div class="flex flex-col items-center mb-6">
-      <h1 class="text-4xl font-bold text-blue-700">OBEDS</h1>
-      <p class="text-sm text-blue-600 mt-2">Online Book Exchange &amp; Donation System</p>
+      <h1 class="text-4xl font-bold text-[#1D3557]">OBEDS</h1>
+      <p class="text-sm text-[#1D3557] mt-2">
+        Online Book Exchange &amp; Donation System
+      </p>
     </div>
 
-    <!-- Register card -->
     <div class="login-card w-full sm:max-w-md">
       <div class="p-6 space-y-4 sm:p-8">
-        <h2 class="text-xl font-bold text-gray-900 md:text-2xl">Create your account</h2>
 
-        <!-- Error message: galti hone par yahan dikhega -->
-        <div id="error-message" class="hidden p-3 text-sm text-red-700 bg-red-100 rounded-lg" role="alert"></div>
+        <h2 class="text-xl font-bold text-[#1D3557] md:text-2xl">
+          Create your account
+        </h2>
 
-       <form id="register-form" class="space-y-4"
-      action="../backend/register.php" method="POST">
+        <div id="error-message"
+             class="hidden p-3 text-sm text-red-700 bg-red-100 rounded-lg"
+             role="alert"
+             aria-live="polite">
+        </div>
+
+        <div id="success-message"
+             class="hidden p-3 text-sm text-green-700 bg-green-100 rounded-lg"
+             role="status"
+             aria-live="polite">
+        </div>
+
+        <form id="register-form"
+              class="space-y-4"
+              action="../backend/register.php"
+              method="POST">
+
           <div>
-            <label for="fullname" class="block mb-2 text-sm font-medium text-gray-900">Full name</label>
-            <input type="text" name="fullname" id="fullname"
-                   class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg block w-full p-2.5"
-                   placeholder="Your full name" required>
+            <label for="fullname"
+                   class="block mb-2 text-sm font-medium text-[#1D3557]">
+              Full name
+            </label>
+
+            <input type="text"
+                   name="fullname"
+                   id="fullname"
+                   maxlength="100"
+                   class="bg-white border border-gray-300 text-gray-900 rounded-lg block w-full p-2.5"
+                   placeholder="Your full name"
+                   required>
           </div>
 
           <div>
-            <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Your email</label>
-            <input type="email" name="email" id="email"
-                   class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg block w-full p-2.5"
-                   placeholder="name@example.com" required>
+            <label for="email"
+                   class="block mb-2 text-sm font-medium text-[#1D3557]">
+              Your email
+            </label>
+
+            <input type="email"
+                   name="email"
+                   id="email"
+                   class="bg-white border border-gray-300 text-gray-900 rounded-lg block w-full p-2.5"
+                   placeholder="name@example.com"
+                   required>
           </div>
 
           <div>
-            <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Password</label>
-            <input type="password" name="password" id="password"
-                   class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg block w-full p-2.5"
-                   placeholder="At least 8 characters" minlength="8" required>
+            <label for="password"
+                   class="block mb-2 text-sm font-medium text-[#1D3557]">
+              Password
+            </label>
+
+            <input type="password"
+                   name="password"
+                   id="password"
+                   minlength="8"
+                   class="bg-white border border-gray-300 text-gray-900 rounded-lg block w-full p-2.5"
+                   placeholder="At least 8 characters"
+                   required>
           </div>
 
           <div>
-            <label for="confirm-password" class="block mb-2 text-sm font-medium text-gray-900">Confirm password</label>
-            <input type="password" name="confirm-password" id="confirm-password"
-                   class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg block w-full p-2.5"
-                   placeholder="Type the password again" minlength="8" required>
+            <label for="confirm-password"
+                   class="block mb-2 text-sm font-medium text-[#1D3557]">
+              Confirm password
+            </label>
+
+            <input type="password"
+                   name="confirm-password"
+                   id="confirm-password"
+                   minlength="8"
+                   class="bg-white border border-gray-300 text-gray-900 rounded-lg block w-full p-2.5"
+                   placeholder="Type the password again"
+                   required>
           </div>
 
           <button type="submit"
-                  class="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                  class="w-full text-white bg-[#1D3557] hover:bg-[#38BDF8] focus:ring-4 focus:outline-none focus:ring-sky-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center transition duration-200">
             Create account
           </button>
 
-          <p class="text-sm font-light text-gray-500">
+          <p class="text-sm font-light text-gray-600">
             Already have an account?
-            <a href="login.html" class="font-medium text-blue-600 hover:underline">Sign in</a>
+            <a href="login.html"
+               class="font-medium text-[#1D3557] hover:text-[#38BDF8] hover:underline">
+              Sign in
+            </a>
           </p>
+
         </form>
       </div>
     </div>
 
   </div>
 </section>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+
+const errorMessages = {
+    invalid_request: 'Invalid registration request.',
+    invalid_name: 'Please enter a valid name (maximum 100 characters).',
+    invalid_email: 'Please enter a valid email address.',
+    weak_password: 'Password must be at least 8 characters.',
+    password_mismatch: 'Passwords do not match.',
+    email_exists: 'This email is already registered.',
+    registration_failed: 'Registration failed. Please try again.'
+};
+
+const error = params.get('error');
+
+if (error && errorMessages[error]) {
+    const errorBox = document.getElementById('error-message');
+    errorBox.textContent = errorMessages[error];
+    errorBox.classList.remove('hidden');
+}
+
+if (params.get('registered') === '1') {
+    const successBox = document.getElementById('success-message');
+    successBox.textContent =
+        'Your account has been created successfully. You can now sign in.';
+    successBox.classList.remove('hidden');
+}
+</script>
+
 </body>
 </html>

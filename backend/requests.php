@@ -1,13 +1,13 @@
 
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-// MySQLi connection for requests
-require __DIR__ . '/db.php';
+require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/../includes/db.php';
 
-// Shared PDO connection and helper functions for header
-require __DIR__ . '/../includes/db.php';
-
+// Login protection
 if (!isset($_SESSION['userId'])) {
     header("Location: ../frontend/login.html");
     exit;
@@ -15,10 +15,18 @@ if (!isset($_SESSION['userId'])) {
 
 $userId = (int) $_SESSION['userId'];
 
+// Generate CSRF token
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 // Fetch Incoming Requests
 $stmt = $conn->prepare(
-    "SELECT requests.requestId, requests.status,
-            books.title, users.name
+    "SELECT
+        requests.requestId,
+        requests.status,
+        books.title,
+        users.name
      FROM requests
      JOIN books ON requests.bookId = books.bookId
      JOIN users ON requests.requesterId = users.userId
@@ -34,8 +42,11 @@ $stmt->close();
 
 // Fetch My Sent Requests
 $stmt = $conn->prepare(
-    "SELECT requests.requestId, requests.status,
-            books.title, users.name AS ownerName
+    "SELECT
+        requests.requestId,
+        requests.status,
+        books.title,
+        users.name AS ownerName
      FROM requests
      JOIN books ON requests.bookId = books.bookId
      JOIN users ON requests.ownerId = users.userId
@@ -51,16 +62,16 @@ $stmt->close();
 
 $conn->close();
 
-// Shared page layout
+// Shared header settings
 $base = '../';
 $pageTitle = 'My Requests';
-$active = '';
+$active = 'requests';
 
-require __DIR__ . '/../includes/header.php';
+require_once __DIR__ . '/../includes/header.php';
 
-// Status styling
+// Request status styling
 function request_status_class($status) {
-    switch (strtolower($status)) {
+    switch (strtolower(trim((string) $status))) {
         case 'accepted':
             return 'status-accepted';
 
@@ -75,135 +86,197 @@ function request_status_class($status) {
 
 <style>
 .requests-page {
-    padding: 35px 0 55px;
+    padding: 40px 0 60px;
 }
 
 .requests-heading {
-    margin-bottom: 28px;
+    margin-bottom: 32px;
 }
 
 .requests-heading h1 {
-    margin-bottom: 8px;
+    color: #1D3557;
+    font-size: 32px;
+    margin: 0 0 10px;
+    font-weight: 700;
 }
 
 .requests-heading p {
-    color: #687386;
+    color: #6B7280;
+    font-size: 15px;
     margin: 0;
+    line-height: 1.7;
 }
 
 .request-section {
-    margin-bottom: 42px;
+    margin-bottom: 45px;
 }
 
 .request-section h2 {
-    margin-bottom: 18px;
+    color: #1D3557;
     font-size: 23px;
+    font-weight: 700;
+    margin: 0 0 20px;
 }
 
 .request-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 18px;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 360px));
+    gap: 22px;
 }
 
 .request-card {
-    background: #fff;
-    border: 1px solid #e4e8ef;
-    border-radius: 12px;
-    padding: 22px;
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 4px 14px rgba(29, 53, 87, 0.05);
+    transition: background 0.2s ease, transform 0.2s ease,
+                box-shadow 0.2s ease;
+}
+
+.request-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(29, 53, 87, 0.09);
 }
 
 .request-card h3 {
-    font-size: 18px;
-    margin: 0 0 12px;
-    color: #202b3c;
+    font-size: 19px;
+    font-weight: 700;
+    color: #1D3557;
+    margin: 0 0 16px;
+    line-height: 1.5;
+    word-break: break-word;
 }
 
 .request-card p {
-    color: #647084;
-    margin: 8px 0;
-    line-height: 1.5;
+    color: #6B7280;
+    margin: 10px 0;
+    font-size: 14px;
+    line-height: 1.6;
 }
 
 .request-card strong {
-    color: #293548;
+    color: #1F2937;
+    font-weight: 600;
 }
 
 .request-status {
-    display: inline-block;
-    padding: 6px 12px;
-    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 13px;
+    border-radius: 30px;
     font-size: 12px;
     font-weight: 700;
+    text-transform: capitalize;
     margin-top: 12px;
 }
 
 .status-pending {
-    background: #fff4d6;
+    background: #FFF4D6;
     color: #946200;
 }
 
 .status-accepted {
-    background: #dcfce7;
+    background: #DCFCE7;
     color: #166534;
 }
 
 .status-rejected {
-    background: #fee2e2;
-    color: #991b1b;
+    background: #FEE2E2;
+    color: #991B1B;
 }
 
 .request-actions {
     display: flex;
-    gap: 10px;
-    margin-top: 18px;
+    gap: 12px;
+    margin-top: 22px;
     flex-wrap: wrap;
 }
 
 .request-actions button {
+    flex: 1;
+    min-width: 100px;
     border: none;
-    border-radius: 7px;
-    padding: 10px 18px;
+    border-radius: 8px;
+    padding: 11px 18px;
     font-weight: 600;
     cursor: pointer;
     font-size: 14px;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.request-actions button:hover {
+    transform: translateY(-1px);
 }
 
 .accept-btn {
-    background: #16834a;
-    color: white;
+    background: #1D3557;
+    color: #FFFFFF;
 }
 
 .accept-btn:hover {
-    background: #11683a;
+    background: #14263F;
 }
 
 .reject-btn {
-    background: #dc3545;
-    color: white;
+    background: #FFFFFF;
+    color: #C44747;
+    border: 1px solid #C44747 !important;
 }
 
 .reject-btn:hover {
-    background: #b92534;
+    background: #FEF2F2;
 }
 
 .empty-requests {
-    background: #f8fafc;
-    border: 1px dashed #cbd5e1;
-    border-radius: 12px;
-    padding: 28px 20px;
+    background: #F8FAFC;
+    border: 1px dashed #CBD5E1;
+    border-radius: 14px;
+    padding: 35px 25px;
     text-align: center;
-    color: #687386;
+    color: #6B7280;
+}
+
+.empty-requests h3 {
+    color: #1D3557;
+    font-size: 18px;
+    margin: 0 0 8px;
+}
+
+.empty-requests p {
+    font-size: 14px;
+    margin: 0;
+    line-height: 1.6;
 }
 
 @media (max-width: 600px) {
     .requests-page {
-        padding-top: 24px;
+        padding: 25px 0 40px;
+    }
+
+    .requests-heading h1 {
+        font-size: 26px;
+    }
+
+    .request-section h2 {
+        font-size: 20px;
+    }
+
+    .request-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
     }
 
     .request-card {
-        padding: 18px;
+        padding: 20px;
+    }
+
+    .request-actions {
+        flex-direction: column;
+    }
+
+    .request-actions button {
+        width: 100%;
     }
 }
 </style>
@@ -212,7 +285,11 @@ function request_status_class($status) {
 
     <div class="requests-heading">
         <h1>My Requests</h1>
-        <p>Manage the book requests you receive and track the requests you send.</p>
+
+        <p>
+            Manage the book requests you receive and track
+            the requests you send.
+        </p>
     </div>
 
     <!-- Incoming Requests -->
@@ -235,11 +312,11 @@ function request_status_class($status) {
 
                     <article class="request-card">
 
-                        <h3><?= htmlspecialchars($row['title']) ?></h3>
+                        <h3><?= e($row['title']) ?></h3>
 
                         <p>
                             <strong>Requested by:</strong>
-                            <?= htmlspecialchars($row['name']) ?>
+                            <?= e($row['name']) ?>
                         </p>
 
                         <p>
@@ -248,10 +325,12 @@ function request_status_class($status) {
                         </p>
 
                         <span class="request-status <?= request_status_class($row['status']) ?>">
-                            <?= htmlspecialchars($row['status']) ?>
+                            <?= e($row['status']) ?>
                         </span>
 
-                        <?php if ($row['status'] === 'Pending'): ?>
+                        <?php if (
+                            strtolower(trim((string) $row['status'])) === 'pending'
+                        ): ?>
 
                             <form
                                 method="POST"
@@ -263,6 +342,12 @@ function request_status_class($status) {
                                     type="hidden"
                                     name="requestId"
                                     value="<?= (int) $row['requestId'] ?>"
+                                >
+
+                                <input
+                                    type="hidden"
+                                    name="csrf_token"
+                                    value="<?= e($_SESSION['csrf_token']) ?>"
                                 >
 
                                 <button
@@ -317,11 +402,11 @@ function request_status_class($status) {
 
                     <article class="request-card">
 
-                        <h3><?= htmlspecialchars($row['title']) ?></h3>
+                        <h3><?= e($row['title']) ?></h3>
 
                         <p>
                             <strong>Book owner:</strong>
-                            <?= htmlspecialchars($row['ownerName']) ?>
+                            <?= e($row['ownerName']) ?>
                         </p>
 
                         <p>
@@ -330,7 +415,7 @@ function request_status_class($status) {
                         </p>
 
                         <span class="request-status <?= request_status_class($row['status']) ?>">
-                            <?= htmlspecialchars($row['status']) ?>
+                            <?= e($row['status']) ?>
                         </span>
 
                     </article>
@@ -345,4 +430,4 @@ function request_status_class($status) {
 
 </div>
 
-<?php require __DIR__ . '/../includes/footer.php'; ?>
+<?php require_once __DIR__ . '/../includes/footer.php'; ?>

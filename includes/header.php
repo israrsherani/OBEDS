@@ -1,9 +1,6 @@
+
 <?php
 // Shared page header (top bar + navigation).
-// Before including, a page may set:
-//   $pageTitle  - text for the browser tab
-//   $base       - path back to the project root ('' for index.php, '../' for pages in /books)
-//   $active     - which menu link to highlight: 'home', 'browse' or 'add'
 $base      = $base ?? '../';
 $pageTitle = $pageTitle ?? 'OBEDS';
 $active    = $active ?? '';
@@ -19,35 +16,59 @@ $active    = $active ?? '';
 <body>
 <header class="site-header">
     <div class="wrap bar">
-        <a class="brand" href="<?= $base ?>index.php">OBEDS<small>Online Book Exchange &amp; Donation</small></a>
-<nav aria-label="Main">
-    <a href="<?= $base ?>index.php"
-       <?= $active === 'home' ? 'aria-current="page"' : '' ?>>Home</a>
 
-    <a href="<?= $base ?>books/list_books.php"
-       <?= $active === 'browse' ? 'aria-current="page"' : '' ?>>Browse books</a>
-
-    <a class="nav-cta" href="<?= $base ?>books/add_book.php"
-       <?= $active === 'add' ? 'aria-current="page"' : '' ?>>List a book</a>
-
-    <?php if (current_user_id() !== null): ?>
-
-    <?php if (is_admin()): ?>
-        <a href="<?= $base ?>backend/admin/dashboard.php">
-            Admin Dashboard
+        <a class="brand" href="<?= $base ?>index.php">
+            OBEDS
+            <small>Online Book Exchange &amp; Donation</small>
         </a>
-    <?php endif; ?>
 
-    <a href="<?= $base ?>backend/logout.php">Logout</a>
+        <nav aria-label="Main">
 
-<?php else: ?>
+            <a href="<?= $base ?>index.php"
+               <?= $active === 'home' ? 'aria-current="page"' : '' ?>>
+                Home
+            </a>
 
-    <a href="<?= $base ?>frontend/login.html">Login</a>
-    <a href="<?= $base ?>frontend/register.html">Register</a>
+            <a href="<?= $base ?>books/list_books.php"
+               <?= $active === 'browse' ? 'aria-current="page"' : '' ?>>
+                Browse books
+            </a>
 
-<?php endif; ?>
-</nav>
+            <a class="nav-cta" href="<?= $base ?>books/add_book.php"
+               <?= $active === 'add' ? 'aria-current="page"' : '' ?>>
+                List a book
+            </a>
 
+            <?php if (current_user_id() !== null): ?>
+
+                <a href="<?= $base ?>backend/requests.php"
+   <?= $active === 'requests' ? 'aria-current="page"' : '' ?>>
+    My Requests
+</a>
+
+                <?php if (is_admin()): ?>
+                    <a href="<?= $base ?>backend/admin/dashboard.php">
+                        Admin Dashboard
+                    </a>
+                <?php endif; ?>
+
+                <a href="<?= $base ?>backend/logout.php">
+                    Logout
+                </a>
+
+            <?php else: ?>
+
+                <a href="<?= $base ?>frontend/login.html">
+                    Login
+                </a>
+
+                <a href="<?= $base ?>frontend/register.html">
+                    Register
+                </a>
+
+            <?php endif; ?>
+
+        </nav>
     </div>
 </header>
 <main class="wrap">

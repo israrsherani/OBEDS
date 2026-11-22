@@ -1,4 +1,4 @@
-/* OBEDS Login Page */
+/* OBEDS Login & Register Pages */
 
 body {
     margin: 0;
@@ -6,15 +6,15 @@ body {
 }
 
 .login-card {
-    background-color: white;
+    background-color: #F8FAFC;
     border: 1px solid #dbeafe;
     border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 15px rgba(29, 53, 87, 0.12);
 }
 
-/* Input par click karne par neeli outline */
+/* Input focus styling */
 .login-card input:focus {
     outline: none;
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+    border-color: #38BDF8;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
 }
