@@ -1,4 +1,3 @@
-
 <?php
 
 require_once __DIR__ . '/../includes/db.php';
@@ -248,201 +247,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $pageTitle = 'List a book';
 $active = 'add';
+$base = '../';
 
 require __DIR__ . '/../includes/header.php';
 
 ?>
 
-<style>
-.addbook-page {
-    max-width: 850px;
-    margin: 40px auto;
-    padding: 0 20px;
-}
+<div class="form-narrow">
 
-.addbook-page * {
-    box-sizing: border-box;
-}
-
-.addbook-heading {
-    margin-bottom: 25px;
-}
-
-.addbook-heading h1 {
-    color: #1D3557;
-    font-size: 32px;
-    margin-bottom: 10px;
-}
-
-.addbook-heading p {
-    color: #64748b;
-    line-height: 1.6;
-}
-
-.addbook-card {
-    background: #fff;
-    padding: 35px;
-    border-radius: 16px;
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 8px 30px rgba(29, 53, 87, 0.06);
-}
-
-.addbook-page .field {
-    margin-bottom: 22px;
-}
-
-.addbook-page .row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 22px;
-}
-
-.addbook-page label {
-    display: block;
-    font-weight: 600;
-    color: #1D3557;
-    font-size: 14px;
-    margin-bottom: 9px;
-}
-
-.addbook-page input[type="text"],
-.addbook-page select,
-.addbook-page textarea {
-    width: 100%;
-    padding: 13px 15px;
-    border: 1px solid #cbd5e1;
-    border-radius: 9px;
-    font-size: 15px;
-    color: #334155;
-    background: #fff;
-    outline: none;
-    font-family: inherit;
-}
-
-.addbook-page input:focus,
-.addbook-page select:focus,
-.addbook-page textarea:focus {
-    border-color: #38BDF8;
-    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.12);
-}
-
-.addbook-page textarea {
-    resize: vertical;
-    min-height: 130px;
-    line-height: 1.6;
-}
-
-.addbook-page .hint {
-    color: #64748b;
-    font-size: 12px;
-    font-weight: normal;
-}
-
-.addbook-page input[type="file"] {
-    width: 100%;
-    padding: 15px;
-    background: #F8FAFC;
-    border: 1px dashed #94a3b8;
-    border-radius: 10px;
-    color: #475569;
-    cursor: pointer;
-}
-
-.addbook-page input[type="file"]::file-selector-button {
-    background: #e0f2fe;
-    color: #1D3557;
-    border: none;
-    border-radius: 7px;
-    padding: 10px 15px;
-    margin-right: 12px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.addbook-upload-hint {
-    font-size: 13px;
-    color: #64748b;
-    margin-top: 10px;
-    line-height: 1.6;
-}
-
-.addbook-errors {
-    background: #fef2f2;
-    color: #991b1b;
-    border: 1px solid #fecaca;
-    border-radius: 10px;
-    padding: 18px 22px;
-    margin-bottom: 22px;
-}
-
-.addbook-errors ul {
-    padding-left: 20px;
-    line-height: 1.8;
-}
-
-.addbook-submit {
-    width: 100%;
-    background: #1D3557;
-    color: white;
-    padding: 15px;
-    border: none;
-    border-radius: 10px;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.addbook-submit:hover {
-    background: #294b72;
-    transform: translateY(-1px);
-}
-
-.addbook-back {
-    display: inline-block;
-    margin-top: 22px;
-    color: #1D3557;
-    font-weight: 600;
-    text-decoration: none;
-}
-
-.addbook-back:hover {
-    color: #38BDF8;
-}
-
-@media (max-width: 650px) {
-    .addbook-page {
-        margin: 25px auto;
-        padding: 0 15px;
-    }
-
-    .addbook-heading h1 {
-        font-size: 26px;
-    }
-
-    .addbook-card {
-        padding: 22px 18px;
-    }
-
-    .addbook-page .row {
-        grid-template-columns: 1fr;
-        gap: 0;
-    }
-}
-</style>
-
-<div class="addbook-page">
-
-    <div class="addbook-heading">
-        <h1>List a Book</h1>
-        <p>
-            Share a book with the OBEDS community.
-            List it for exchange or donate it to another reader.
-        </p>
+    <div class="page-head">
+        <div>
+            <h1 class="page-title">List a Book</h1>
+            <p>
+                Share a book with the OBEDS community.
+                List it for exchange or donate it to another reader.
+            </p>
+        </div>
     </div>
 
     <?php if ($errors): ?>
-        <div class="addbook-errors" role="alert">
+        <div class="alert error" role="alert">
             <strong>Please correct the following:</strong>
             <ul>
                 <?php foreach ($errors as $err): ?>
@@ -453,7 +277,7 @@ require __DIR__ . '/../includes/header.php';
     <?php endif; ?>
 
     <form
-        class="addbook-card"
+        class="card form-card"
         method="POST"
         enctype="multipart/form-data"
     >
@@ -490,7 +314,7 @@ require __DIR__ . '/../includes/header.php';
             >
         </div>
 
-        <div class="row">
+        <div class="form-grid">
 
             <div class="field">
                 <label for="category">Category *</label>
@@ -526,7 +350,7 @@ require __DIR__ . '/../includes/header.php';
 
         </div>
 
-        <div class="row">
+        <div class="form-grid">
 
             <div class="field">
                 <label for="book_condition">Book Condition *</label>
@@ -596,18 +420,18 @@ require __DIR__ . '/../includes/header.php';
                 accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
             >
 
-            <p class="addbook-upload-hint">
+            <p class="upload-hint">
                 JPG, PNG or WEBP image. Maximum file size: 2 MB.
             </p>
         </div>
 
-        <button class="addbook-submit" type="submit">
+        <button class="btn gold block" type="submit">
             List My Book
         </button>
 
     </form>
 
-    <a href="list_books.php" class="addbook-back">
+    <a href="list_books.php" class="back-link">
         &larr; Back to Browse Books
     </a>
 
