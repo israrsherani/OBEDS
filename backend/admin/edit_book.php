@@ -1,4 +1,3 @@
-
 <?php
 require_once __DIR__ . '/../../includes/db.php';
 
@@ -126,256 +125,72 @@ $active = '';
 require_once __DIR__ . '/../../includes/header.php';
 ?>
 
-<style>
-body {
-    background: #F8FAFC;
-}
+<div class="page-head">
+    <div>
+        <h1 class="page-title">Edit Book</h1>
+        <p>Update the book listing details below.</p>
+    </div>
+    <a class="btn soft" href="books.php" style="padding:10px 18px;font-size:.92rem">&larr; Back to Books</a>
+</div>
 
-.edit-page {
-    max-width: 760px;
-    margin: 40px auto;
-    padding-bottom: 50px;
-}
-
-.edit-card {
-    background: #FFFFFF;
-    border: 1px solid #E2E8F0;
-    border-radius: 14px;
-    padding: 30px;
-    box-shadow: 0 4px 14px rgba(29, 53, 87, 0.05);
-}
-
-.edit-page h1 {
-    color: #1D3557;
-    margin-bottom: 8px;
-}
-
-.edit-subtitle {
-    color: #6B7280;
-    margin-bottom: 25px;
-}
-
-.edit-form label {
-    display: block;
-    color: #1F2937;
-    font-weight: 600;
-    margin-bottom: 8px;
-}
-
-.edit-form input,
-.edit-form select,
-.edit-form textarea {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #CBD5E1;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    background: #FFFFFF;
-    font: inherit;
-    box-sizing: border-box;
-}
-
-.edit-form input:focus,
-.edit-form select:focus,
-.edit-form textarea:focus {
-    outline: 2px solid #38BDF8;
-    border-color: #38BDF8;
-}
-
-.edit-form textarea {
-    min-height: 120px;
-    resize: vertical;
-}
-
-.edit-actions {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-top: 5px;
-}
-
-.save-btn {
-    background: #1D3557;
-    color: #FFFFFF;
-    border: none;
-    padding: 12px 22px;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.save-btn:hover {
-    background: #294A75;
-}
-
-.cancel-btn {
-    display: inline-block;
-    text-decoration: none;
-    background: #FFFFFF;
-    color: #1D3557;
-    border: 1px solid #1D3557;
-    padding: 12px 22px;
-    border-radius: 8px;
-    font-weight: 600;
-}
-
-.cancel-btn:hover {
-    background: #EFF6FF;
-}
-
-.edit-error {
-    background: #FEE2E2;
-    color: #991B1B;
-    border: 1px solid #FECACA;
-    padding: 14px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-}
-
-@media (max-width: 600px) {
-    .edit-card {
-        padding: 20px;
-    }
-
-    .edit-page {
-        margin-top: 25px;
-    }
-}
-</style>
-
-<div class="edit-page">
-
-    <div class="edit-card">
-
-        <h1>Edit Book</h1>
-
-        <p class="edit-subtitle">
-            Update the book listing details below.
-        </p>
+<div class="form-narrow">
+    <div class="card form-card">
 
         <?php if ($error !== ''): ?>
-
-            <div class="edit-error">
-                <?= e($error) ?>
-            </div>
-
+            <div class="alert error"><?= e($error) ?></div>
         <?php endif; ?>
 
-        <form method="POST" action="edit_book.php?id=<?= (int)$bookId ?>" class="edit-form">
+        <form method="POST" action="edit_book.php?id=<?= (int)$bookId ?>">
 
-            <input
-                type="hidden"
-                name="bookId"
-                value="<?= (int)$book['bookId'] ?>"
-            >
+            <input type="hidden" name="bookId" value="<?= (int)$book['bookId'] ?>">
+            <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
 
-            <input
-                type="hidden"
-                name="csrf_token"
-                value="<?= e($_SESSION['csrf_token']) ?>"
-            >
+            <div class="form-grid">
+                <div>
+                    <label for="title">Book Title</label>
+                    <input type="text" id="title" name="title" maxlength="255" value="<?= e($book['title']) ?>" required>
+                </div>
 
-            <label for="title">Book Title</label>
+                <div>
+                    <label for="author">Author</label>
+                    <input type="text" id="author" name="author" maxlength="255" value="<?= e($book['author'] ?? '') ?>" required>
+                </div>
 
-            <input
-                type="text"
-                id="title"
-                name="title"
-                maxlength="255"
-                value="<?= e($book['title']) ?>"
-                required
-            >
+                <div>
+                    <label for="category">Category</label>
+                    <input type="text" id="category" name="category" maxlength="100" value="<?= e($book['category'] ?? '') ?>" required>
+                </div>
 
-            <label for="author">Author</label>
+                <div>
+                    <label for="book_condition">Book Condition</label>
+                    <select id="book_condition" name="book_condition" required>
+                        <?php foreach (['new', 'good', 'fair', 'poor'] as $c): ?>
+                            <option value="<?= e($c) ?>" <?= ($book['book_condition'] ?? '') === $c ? 'selected' : '' ?>>
+                                <?= ucfirst($c) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
 
-            <input
-                type="text"
-                id="author"
-                name="author"
-                maxlength="255"
-                value="<?= e($book['author'] ?? '') ?>"
-                required
-            >
-
-            <label for="category">Category</label>
-
-            <input
-                type="text"
-                id="category"
-                name="category"
-                maxlength="100"
-                value="<?= e($book['category'] ?? '') ?>"
-                required
-            >
-
-            <label for="book_condition">Book Condition</label>
-
-            <select
-                id="book_condition"
-                name="book_condition"
-                required
-            >
-
-                <?php foreach (['new', 'good', 'fair', 'poor'] as $c): ?>
-
-                    <option
-                        value="<?= e($c) ?>"
-                        <?= ($book['book_condition'] ?? '') === $c ? 'selected' : '' ?>
-                    >
-                        <?= ucfirst($c) ?>
-                    </option>
-
-                <?php endforeach; ?>
-
-            </select>
-
-            <label for="listing_type">Listing Type</label>
-
-            <select
-                id="listing_type"
-                name="listing_type"
-                required
-            >
-
-                <option
-                    value="exchange"
-                    <?= ($book['listing_type'] ?? '') === 'exchange' ? 'selected' : '' ?>
-                >
-                    Exchange
-                </option>
-
-                <option
-                    value="donate"
-                    <?= ($book['listing_type'] ?? '') === 'donate' ? 'selected' : '' ?>
-                >
-                    Donate
-                </option>
-
-            </select>
+                <div>
+                    <label for="listing_type">Listing Type</label>
+                    <select id="listing_type" name="listing_type" required>
+                        <option value="exchange" <?= ($book['listing_type'] ?? '') === 'exchange' ? 'selected' : '' ?>>Exchange</option>
+                        <option value="donate" <?= ($book['listing_type'] ?? '') === 'donate' ? 'selected' : '' ?>>Donate</option>
+                    </select>
+                </div>
+            </div>
 
             <label for="description">Description</label>
+            <textarea id="description" name="description"><?= e($book['description'] ?? '') ?></textarea>
 
-            <textarea
-                id="description"
-                name="description"
-            ><?= e($book['description'] ?? '') ?></textarea>
-
-            <div class="edit-actions">
-
-                <button type="submit" class="save-btn">
-                    Save Changes
-                </button>
-
-                <a href="books.php" class="cancel-btn">
-                    Cancel
-                </a>
-
+            <div class="btns" style="margin-top:26px">
+                <button type="submit" class="btn primary">Save Changes</button>
+                <a href="books.php" class="btn soft">Cancel</a>
             </div>
 
         </form>
-
     </div>
-
 </div>
 
 <?php require_once __DIR__ . '/../../includes/footer.php'; ?>

@@ -6,7 +6,7 @@
 <title>Register | OBEDS</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700;800&display=swap">
 <!-- AGAR style.css ka path alag hai to sirf ye ek line badlein -->
-<link rel="stylesheet" href="../assets/css/style.css">
+<link rel="stylesheet" href="../style.css">
 <style>
 .auth{display:grid;grid-template-columns:1fr 1fr;border-radius:calc(var(--radius) + 6px);overflow:hidden;box-shadow:var(--shadow);border:1px solid var(--line);max-width:960px;margin:0 auto}
 .auth-side{background:radial-gradient(600px 300px at 90% 0%,rgba(224,165,38,.28),transparent 60%),linear-gradient(160deg,var(--navy),var(--navy-2));color:#fff;padding:44px 38px;display:flex;flex-direction:column;justify-content:center}
@@ -57,6 +57,8 @@
       <input type="text" id="fullname" name="fullname" maxlength="100" placeholder="Your full name" required autocomplete="name">
       <label for="email">Email</label>
       <input type="email" id="email" name="email" placeholder="you@example.com" required autocomplete="email">
+      <label for="phone">Phone / WhatsApp <span class="hint">(e.g. 0300 1234567)</span></label>
+      <input type="tel" id="phone" name="phone" inputmode="tel" maxlength="20" placeholder="03XX XXXXXXX" required autocomplete="tel">
       <label for="password">Password <span class="hint">(at least 8 characters)</span></label>
       <input type="password" id="password" name="password" minlength="8" placeholder="Choose a password" required autocomplete="new-password">
       <label for="confirm-password">Confirm password</label>
@@ -78,7 +80,7 @@
         <li><a href="register.html">Register</a></li>
       </ul>
     </div>
-    <div class="copy">&copy; <span id="yr"></span> OBEDS. All rights reserved.</div>
+    <div class="copy">&copy; <span id="yr"></span> OBEDS. Built by <a href="../team.php"><b>Asma Naz, Israr Khan, Muhammad Ismaeel, Sumaiya &amp; Sherin</b></a></div>
   </div>
 </footer>
 <script>
@@ -90,7 +92,7 @@ document.getElementById('yr').textContent=new Date().getFullYear();
   var n=dark?'light':'dark';r.setAttribute('data-theme',n);try{localStorage.setItem(k,n)}catch(e){}
  });})();
 var q=new URLSearchParams(location.search);
-var E={invalid_request:'Something went wrong. Please try again.',invalid_name:'Enter your name (up to 100 characters).',invalid_email:'Enter a valid email address.',weak_password:'Password must be at least 8 characters.',password_mismatch:'The two passwords do not match.',email_exists:'This email is already registered. Try logging in instead.',registration_failed:'Registration failed. Please try again in a moment.'};
+var E={invalid_request:'Something went wrong. Please try again.',invalid_name:'Enter your name (up to 100 characters).',invalid_email:'Enter a valid email address.',invalid_phone:'Enter a valid phone number (10 to 15 digits).',weak_password:'Password must be at least 8 characters.',password_mismatch:'The two passwords do not match.',email_exists:'This email is already registered. Try logging in instead.',registration_failed:'Registration failed. Please try again in a moment.'};
 var m=document.getElementById('msg'),e=q.get('error');
 if(q.get('registered')==='1'){m.className='alert success';m.innerHTML='Account created. <a href="login.html"><b>Log in now</b></a>.';m.hidden=false}
 else if(e){m.textContent=E[e]||'Registration failed. Please try again.';m.hidden=false}
