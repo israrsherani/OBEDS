@@ -1,4 +1,3 @@
-
 <?php
 require_once __DIR__ . "/db.php";
 
@@ -13,6 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 
 $name = trim($_POST["fullname"] ?? '');
 $email = trim($_POST["email"] ?? '');
+$phone = trim($_POST["phone"] ?? '');
 $password = $_POST["password"] ?? '';
 $confirmPassword = $_POST["confirm-password"] ?? '';
 
@@ -24,6 +24,12 @@ if ($name === '' || strlen($name) > 100) {
 // Validate email
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     registerRedirect("invalid_email");
+}
+
+// Validate phone (spaces and dashes allowed, 10-15 digits, optional +)
+$phone = preg_replace('/[\s\-()]/', '', $phone);
+if (!preg_match('/^\+?[0-9]{10,15}$/', $phone)) {
+    registerRedirect("invalid_phone");
 }
 
 // Validate password
@@ -41,8 +47,8 @@ $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
 // Insert new user
 $stmt = $conn->prepare(
-    "INSERT INTO users (name, email, passwordHash)
-     VALUES (?, ?, ?)"
+    "INSERT INTO users (name, email, phone, passwordHash)
+     VALUES (?, ?, ?, ?)"
 );
 
 if (!$stmt) {
@@ -51,7 +57,7 @@ if (!$stmt) {
     registerRedirect("registration_failed");
 }
 
-$stmt->bind_param("sss", $name, $email, $hashedPassword);
+$stmt->bind_param("ssss", $name, $email, $phone, $hashedPassword);
 
 if ($stmt->execute()) {
 

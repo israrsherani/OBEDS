@@ -1,157 +1,105 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OBEDS - Register</title>
-
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Register | OBEDS</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700;800&display=swap">
+<!-- AGAR style.css ka path alag hai to sirf ye ek line badlein -->
+<link rel="stylesheet" href="../style.css">
+<style>
+.auth{display:grid;grid-template-columns:1fr 1fr;border-radius:calc(var(--radius) + 6px);overflow:hidden;box-shadow:var(--shadow);border:1px solid var(--line);max-width:960px;margin:0 auto}
+.auth-side{background:radial-gradient(600px 300px at 90% 0%,rgba(224,165,38,.28),transparent 60%),linear-gradient(160deg,var(--navy),var(--navy-2));color:#fff;padding:44px 38px;display:flex;flex-direction:column;justify-content:center}
+.auth-side h1{font-size:clamp(1.8rem,3.4vw,2.5rem);margin-bottom:14px}
+.auth-side p{color:#c4c9ea;max-width:36ch}
+.auth-side ul{list-style:none;padding:0;margin-top:26px;display:grid;gap:12px;color:#dfe2f6;font-size:.95rem}
+.auth-side li::before{content:"\2713";color:var(--gold-2);font-weight:700;margin-right:10px}
+.auth-form{background:var(--card);padding:44px 38px;border-top:3px solid var(--gold)}
+.auth-form h2{font-size:1.6rem;margin-bottom:4px}
+.auth-form .sub{color:var(--muted);margin-bottom:10px;font-size:.95rem}
+.auth-form .btn.block{margin-top:24px;padding:14px;font-size:1rem}
+.auth-form .switch{margin-top:22px;text-align:center;color:var(--muted);font-size:.93rem}
+.auth-form .switch a{color:var(--navy-2);font-weight:600}
+.auth-form .switch a:hover{color:var(--gold)}
+:root[data-theme="dark"] .auth-form .switch a{color:var(--gold-2)}
+@media (prefers-color-scheme:dark){:root:not([data-theme]) .auth-form .switch a{color:var(--gold-2)}}
+.alert[hidden]{display:none}
+@media (max-width:760px){.auth{grid-template-columns:1fr}.auth-side{padding:30px 24px}.auth-form{padding:30px 22px}}
+</style>
 </head>
-
 <body>
-<section class="bg-[#F8FAFC] min-h-screen">
-  <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="brand" href="../index.php">OBEDS<small>Online Book Exchange &amp; Donation</small></a>
+    <nav>
+      <a href="../index.php">Home</a>
+      <a href="../books/list_books.php">Browse Books</a>
+      <a href="login.html" >Login</a>
+      <a href="register.html" class="nav-cta" aria-current="page">Register</a>
+      <button id="mode" type="button" aria-label="Toggle dark mode">&#9790;</button>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
 
-    <div class="flex flex-col items-center mb-6">
-      <h1 class="text-4xl font-bold text-[#1D3557]">OBEDS</h1>
-      <p class="text-sm text-[#1D3557] mt-2">
-        Online Book Exchange &amp; Donation System
-      </p>
-    </div>
-
-    <div class="login-card w-full sm:max-w-md">
-      <div class="p-6 space-y-4 sm:p-8">
-
-        <h2 class="text-xl font-bold text-[#1D3557] md:text-2xl">
-          Create your account
-        </h2>
-
-        <div id="error-message"
-             class="hidden p-3 text-sm text-red-700 bg-red-100 rounded-lg"
-             role="alert"
-             aria-live="polite">
-        </div>
-
-        <div id="success-message"
-             class="hidden p-3 text-sm text-green-700 bg-green-100 rounded-lg"
-             role="status"
-             aria-live="polite">
-        </div>
-
-        <form id="register-form"
-              class="space-y-4"
-              action="../backend/register.php"
-              method="POST">
-
-          <div>
-            <label for="fullname"
-                   class="block mb-2 text-sm font-medium text-[#1D3557]">
-              Full name
-            </label>
-
-            <input type="text"
-                   name="fullname"
-                   id="fullname"
-                   maxlength="100"
-                   class="bg-white border border-gray-300 text-gray-900 rounded-lg block w-full p-2.5"
-                   placeholder="Your full name"
-                   required>
-          </div>
-
-          <div>
-            <label for="email"
-                   class="block mb-2 text-sm font-medium text-[#1D3557]">
-              Your email
-            </label>
-
-            <input type="email"
-                   name="email"
-                   id="email"
-                   class="bg-white border border-gray-300 text-gray-900 rounded-lg block w-full p-2.5"
-                   placeholder="name@example.com"
-                   required>
-          </div>
-
-          <div>
-            <label for="password"
-                   class="block mb-2 text-sm font-medium text-[#1D3557]">
-              Password
-            </label>
-
-            <input type="password"
-                   name="password"
-                   id="password"
-                   minlength="8"
-                   class="bg-white border border-gray-300 text-gray-900 rounded-lg block w-full p-2.5"
-                   placeholder="At least 8 characters"
-                   required>
-          </div>
-
-          <div>
-            <label for="confirm-password"
-                   class="block mb-2 text-sm font-medium text-[#1D3557]">
-              Confirm password
-            </label>
-
-            <input type="password"
-                   name="confirm-password"
-                   id="confirm-password"
-                   minlength="8"
-                   class="bg-white border border-gray-300 text-gray-900 rounded-lg block w-full p-2.5"
-                   placeholder="Type the password again"
-                   required>
-          </div>
-
-          <button type="submit"
-                  class="w-full text-white bg-[#1D3557] hover:bg-[#38BDF8] focus:ring-4 focus:outline-none focus:ring-sky-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center transition duration-200">
-            Create account
-          </button>
-
-          <p class="text-sm font-light text-gray-600">
-            Already have an account?
-            <a href="login.html"
-               class="font-medium text-[#1D3557] hover:text-[#38BDF8] hover:underline">
-              Sign in
-            </a>
-          </p>
-
-        </form>
-      </div>
-    </div>
-
+<section class="auth">
+  <div class="auth-side">
+    <h1>Join OBEDS</h1>
+    <p>Create a free account and start exchanging or donating books today.</p>
+    <ul><li>Free to join</li><li>Give books a second life</li><li>Find your next read nearby</li></ul>
+  </div>
+  <div class="auth-form">
+    <h2>Create account</h2>
+    <p class="sub">It takes less than a minute.</p>
+    <div id="msg" class="alert error" role="alert" hidden></div>
+    <form action="../backend/register.php" method="POST" id="reg">
+      <label for="fullname">Full name</label>
+      <input type="text" id="fullname" name="fullname" maxlength="100" placeholder="Your full name" required autocomplete="name">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" placeholder="you@example.com" required autocomplete="email">
+      <label for="phone">Phone / WhatsApp <span class="hint">(e.g. 0300 1234567)</span></label>
+      <input type="tel" id="phone" name="phone" inputmode="tel" maxlength="20" placeholder="03XX XXXXXXX" required autocomplete="tel">
+      <label for="password">Password <span class="hint">(at least 8 characters)</span></label>
+      <input type="password" id="password" name="password" minlength="8" placeholder="Choose a password" required autocomplete="new-password">
+      <label for="confirm-password">Confirm password</label>
+      <input type="password" id="confirm-password" name="confirm-password" minlength="8" placeholder="Type it again" required autocomplete="new-password">
+      <button type="submit" class="btn primary block">Create account</button>
+    </form>
+    <p class="switch">Already registered? <a href="login.html">Log in</a></p>
   </div>
 </section>
-
+</main>
+<footer>
+  <div class="wrap">
+    <div class="f-in">
+      <div><a class="brand" href="../index.php">OBEDS</a><p>Read more. Waste less. Share books.</p></div>
+      <ul>
+        <li><a href="../index.php">Home</a></li>
+        <li><a href="../books/list_books.php">Browse Books</a></li>
+        <li><a href="login.html">Login</a></li>
+        <li><a href="register.html">Register</a></li>
+      </ul>
+    </div>
+    <div class="copy">&copy; <span id="yr"></span> OBEDS. Built by <a href="../team.php"><b>Asma Naz, Israr Khan, Muhammad Ismaeel, Sumaiya &amp; Sherin</b></a></div>
+  </div>
+</footer>
 <script>
-const params = new URLSearchParams(window.location.search);
-
-const errorMessages = {
-    invalid_request: 'Invalid registration request.',
-    invalid_name: 'Please enter a valid name (maximum 100 characters).',
-    invalid_email: 'Please enter a valid email address.',
-    weak_password: 'Password must be at least 8 characters.',
-    password_mismatch: 'Passwords do not match.',
-    email_exists: 'This email is already registered.',
-    registration_failed: 'Registration failed. Please try again.'
-};
-
-const error = params.get('error');
-
-if (error && errorMessages[error]) {
-    const errorBox = document.getElementById('error-message');
-    errorBox.textContent = errorMessages[error];
-    errorBox.classList.remove('hidden');
-}
-
-if (params.get('registered') === '1') {
-    const successBox = document.getElementById('success-message');
-    successBox.textContent =
-        'Your account has been created successfully. You can now sign in.';
-    successBox.classList.remove('hidden');
-}
+document.getElementById('yr').textContent=new Date().getFullYear();
+(function(){var r=document.documentElement,k='theme';
+ try{var s=localStorage.getItem(k);if(s)r.setAttribute('data-theme',s)}catch(e){}
+ document.getElementById('mode').addEventListener('click',function(){
+  var dark=r.getAttribute('data-theme')==='dark'||(!r.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme:dark)').matches);
+  var n=dark?'light':'dark';r.setAttribute('data-theme',n);try{localStorage.setItem(k,n)}catch(e){}
+ });})();
+var q=new URLSearchParams(location.search);
+var E={invalid_request:'Something went wrong. Please try again.',invalid_name:'Enter your name (up to 100 characters).',invalid_email:'Enter a valid email address.',invalid_phone:'Enter a valid phone number (10 to 15 digits).',weak_password:'Password must be at least 8 characters.',password_mismatch:'The two passwords do not match.',email_exists:'This email is already registered. Try logging in instead.',registration_failed:'Registration failed. Please try again in a moment.'};
+var m=document.getElementById('msg'),e=q.get('error');
+if(q.get('registered')==='1'){m.className='alert success';m.innerHTML='Account created. <a href="login.html"><b>Log in now</b></a>.';m.hidden=false}
+else if(e){m.textContent=E[e]||'Registration failed. Please try again.';m.hidden=false}
+document.getElementById('reg').addEventListener('submit',function(ev){
+ if(document.getElementById('password').value!==document.getElementById('confirm-password').value){
+  ev.preventDefault();m.className='alert error';m.textContent=E.password_mismatch;m.hidden=false;m.scrollIntoView({block:'center'});}
+});
 </script>
-
 </body>
 </html>
